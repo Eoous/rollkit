@@ -214,14 +214,14 @@ func setPointerParam(rawVal string, args *reflect.Value, i int) error {
 	}
 	field := args.Elem().Field(i)
 	switch {
-	// only *StrInt64 is supported for now
+	// only *BlockNumber is supported for now
 	case field.Type() == reflect.TypeOf(blockArgs{}.Height):
-		val, err := strconv.ParseInt(rawVal, 10, 64)
+		var bn BlockNumber
+		err := bn.UnmarshalJSON([]byte(rawVal))
 		if err != nil {
 			return err
 		}
-		strInt64Val := StrInt64(val)
-		args.Elem().Field(i).Set(reflect.ValueOf(&strInt64Val))
+		args.Elem().Field(i).Set(reflect.ValueOf(&bn))
 		return nil
 	default:
 		return fmt.Errorf("unsupported pointer type: %v", field)
